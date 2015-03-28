@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block scripts %}
+    <script type="application/javascript" src="{% static 'js/jquery-2.1.3.js' %}"></script>
+    <script type="application/javascript" src="{% static 'js/ol-debug.js' %}"></script>
+    <script type="application/javascript" src="{% static 'js/map.js' %}"></script>
+    <script>
+        jQuery(document).ready(function() {
+            init("{% url 'session_data' session_id %}");
+        });
+    </script>
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ol.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/map.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>Session from {{ start_time }}</h1>
+    <span id="status"></span>
+    <div id="map"></div>
+{% endblock %}

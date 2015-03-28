@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Tracker - Session List{% endblock %}
+
+{% block content %}
+    {% if session_list %}
+        <h1>Sessions:</h1>
+        <ul>
+            {% for session in session_list %}
+                {% if view_key %}
+                <li><a href="{% url 'vk_session' view_key session.id %}">{{ session.start_time }}</a></li>
+                {% else %}
+                <li><a href="{% url 'user_session' session.id %}">{{ session.start_time }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No sessions found.</p>
+    {% endif %}
+{% endblock %}

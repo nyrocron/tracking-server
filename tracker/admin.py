@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from tracker.models import ViewKey
+
+admin.site.register(ViewKey)

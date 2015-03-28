@@ -1,0 +1,77 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+}
+
+.error {
+    color: #ff0000;
+}
+
+ul.menu-horizontal {
+    width: 100%;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+ul.menu-horizontal li.userinfo {
+    right: 0;
+    color: dimgrey;
+    vertical-align: middle;
+}
+
+ul.menu {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+ul.menu a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+ul.menu a:visited {
+    color: inherit;
+}
+
+ul.menu-horizontal {
+    display: inline-block;
+}
+
+ul.menu-horizontal li {
+    display: inline-block;
+}
+
+ul.menu-horizontal a {
+    display: inline-block;
+    margin: 0 0.1em;
+    padding: 0.5em 0.4em;
+}
+
+ul.menu-horizontal a:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+div#content {
+    padding: 10px;
+}
+
+form table th {
+    text-align: left;
+    vertical-align: baseline;
+}
+
+form span.helptext {
+    font-size: 0.8em;
+    color: dimgrey;
+}
+
+form ul.errorlist {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.8em;
+    color: red;
+}

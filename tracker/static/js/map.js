@@ -44,6 +44,10 @@ app.updateMap = function () {
         .done(function(data) {
             $('#status').text('');
             app.showData(data);
+            if (!data.active) {
+                app.refresh = false;
+                $('#status').text("Session has finished");
+            }
         })
         .fail(function () {
             $('#status').addClass('error').text("Failed to load session data");

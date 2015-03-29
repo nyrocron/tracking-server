@@ -30,7 +30,8 @@ class TrackingSession(models.Model):
             'longitude': pos.longitude
         } for pos in self.trackedposition_set.all()]
         return dumps({
-            'points': points
+            'points': points,
+            'active': self.active == True
         })
 
 

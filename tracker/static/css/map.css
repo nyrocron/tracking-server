@@ -1,4 +1,15 @@
-div#map {
-    width: 800px;
-    height: 600px;
+.center-map {
+    top: 0.5em;
+    right: 0.5em;
+}
+
+div#content {
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+}
+
+h1 {
+    font-size: 1.2em;
+    margin: 0.2em;
 }

@@ -9,23 +9,20 @@
     {% block styles %}{% endblock %}
 </head>
 <body>
-<ul class="menu menu-horizontal">
-    <li><a href="{% url 'index' %}">Home</a></li>
-{% if user and user.is_authenticated %}
-    <li><a href="{% url 'user_session_list' %}">My Sessions</a></li>
-    <li><a href="{% url 'user_tracking_key' %}">Tracking Key</a></li>
-    <li><a href="{% url 'logout' %}">Log Out</a></li>
-    <li class="userinfo">Logged in as {{ user.username }}</li>
-{% else %}
-    <li><a href="{% url 'login' %}">Log In</a></li>
-    <li><a href="{% url 'signup' %}">Sign Up</a></li>
-{% endif %}
-</ul>
-{% if user and user.is_authenticated %}
-
-{% endif %}
-<div id="content">
-    {% block content %}{% endblock %}
-</div>
+    <ul id="topmenu" class="menu menu-horizontal">
+        <li><a href="{% url 'index' %}">Home</a></li>
+    {% if user and user.is_authenticated %}
+        <li><a href="{% url 'user_session_list' %}">My Sessions</a></li>
+        <li><a href="{% url 'user_tracking_key' %}">Tracking Key</a></li>
+        <li><a href="{% url 'logout' %}">Log Out</a></li>
+        <li class="userinfo">Logged in as {{ user.username }}</li>
+    {% else %}
+        <li><a href="{% url 'login' %}">Log In</a></li>
+        <li><a href="{% url 'signup' %}">Sign Up</a></li>
+    {% endif %}
+    </ul>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>

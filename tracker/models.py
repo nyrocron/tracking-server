@@ -9,16 +9,20 @@ from django.utils import timezone
 class TrackingSession(models.Model):
     user = models.ForeignKey(User)
     start_time = models.DateTimeField()
+    active = models.BooleanField()
 
     @staticmethod
     def create_session(user):
-        sess = TrackingSession(user=user, start_time=timezone.now())
+        sess = TrackingSession(user=user, start_time=timezone.now(), active=True)
         sess.save()
         return sess
 
-    def add_position(self, position_dict):
-        """Add a new TrackedPosition with the given data"""
-        raise NotImplementedError()
+    def finish(self):
+        self.active = False
+        if self.trackedposition_set.count() > 0:
+            self.save()
+        else:
+            self.delete()
 
     def as_json(self):
         points = [{
@@ -59,7 +63,10 @@ class TrackingKey(models.Model):
         """Create a new random key."""
         if user.trackingkey:
             user.trackingkey.delete()
-        TrackingKey(user=user, key=random_string(16)).save()
+        try:
+            TrackingKey(user=user, key=random_string(16)).save()
+        except IntegrityError:
+            TrackingKey.create_key(user)
 
 
 class ViewKey(models.Model):

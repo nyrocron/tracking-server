@@ -8,7 +8,19 @@
     <script type="application/javascript" src="{% static 'js/map.js' %}"></script>
     <script>
         jQuery(document).ready(function() {
-            init("{% url 'session_data' session_id %}");
+            {% if view_key %}
+                var data_url = "{% url 'session_data_vk' session_id view_key %}";
+            {% else %}
+                var data_url = "{% url 'session_data' session_id %}";
+            {% endif %}
+
+            {% if session.active %}
+                var refresh = true;
+            {% else %}
+                var refresh = false;
+            {% endif %}
+
+            app.init(data_url, refresh);
         });
     </script>
 {% endblock %}
@@ -19,7 +31,9 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Session from {{ start_time }}</h1>
+    <h1>Session from {{ start_time }}{% if not session.active %} (finished){% endif %}</h1>
     <span id="status"></span>
-    <div id="map"></div>
+    <div id="map_wrapper">
+        <div id="map"></div>
+    </div>
 {% endblock %}

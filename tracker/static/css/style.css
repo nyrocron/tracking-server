@@ -1,6 +1,12 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: sans-serif;
-    margin: 0;
 }
 
 .error {
@@ -16,7 +22,6 @@ ul.menu-horizontal {
 ul.menu-horizontal li.userinfo {
     right: 0;
     color: dimgrey;
-    vertical-align: middle;
 }
 
 ul.menu {
@@ -74,4 +79,9 @@ form ul.errorlist {
     margin: 0;
     font-size: 0.8em;
     color: red;
+}
+
+ul.session-list {
+    list-style-type: none;
+    padding: 0;
 }

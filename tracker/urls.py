@@ -7,6 +7,8 @@ urlpatterns = patterns('',
         views.track),
     url(r'^track/(?P<tracking_key>[a-z]+)/session/new/$',
         views.session_new, name='create_session'),
+    url(r'^track/(?P<tracking_key>[a-z]+)/session/(?P<session_id>\d+)/finish/$',
+        views.session_finish, name='finish_session'),
 
     url(r'^$', views.index, name='index'),
 
@@ -16,6 +18,7 @@ urlpatterns = patterns('',
         views.session, name='vk_session'),
     url(r'^session/$', views.user_session_list, name='user_session_list'),
     url(r'^session/(?P<session_id>\d+)/$', views.session, name='user_session'),
+    url(r'^session/(?P<session_id>\d+)/share/$', views.session_share, name='share_session'),
 
     url(r'^user/trackingkey/$', views.tracking_keys, name='user_tracking_key'),
     url(r'^user/trackingkey/new/$', views.tracking_keys, {'action': 'new'}, name='user_tracking_key_new'),

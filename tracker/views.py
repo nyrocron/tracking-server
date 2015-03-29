@@ -14,17 +14,38 @@ from tracker.models import TrackingSession, ViewKey, TrackedPosition, \
 from tracking import settings
 
 
-def auth_tracking_session(func):
-    def inner(request, session_id, view_key=None, *args, **kwargs):
-        session = get_object_or_404(TrackingSession, id=session_id)
-        if view_key is not None:
-            if not session.viewkey_set.get(key=view_key):
-                return HttpResponseForbidden()
-        elif not request.user.is_authenticated():
-            return redirect('{0}?next={1}'.format(settings.LOGIN_URL, request.path))
-        request.tracking_session = session
-        return func(request, *args, **kwargs)
-    return inner
+def authenticate_view_session(function=None, allow_viewkey=True):
+    def decorator(fn):
+        def inner(request, session_id, view_key=None, *args, **kwargs):
+            session = get_object_or_404(TrackingSession, id=session_id)
+            if allow_viewkey and view_key is not None:
+                if not session.viewkey_set.get(key=view_key):
+                    return HttpResponseForbidden()
+            elif not request.user.is_authenticated() or session.user != request.user:
+                return redirect('{0}?next={1}'.format(settings.LOGIN_URL, request.path))
+            request.tracking_session = session
+            return fn(request, *args, **kwargs)
+        return inner
+    if function:
+        return decorator(function)
+    return decorator
+
+
+def authenticate_tracking_session(function=None, allow_trackingkey=True):
+    def decorator(fn):
+        def inner(request, session_id, tracking_key=None, *args, **kwargs):
+            session = get_object_or_404(TrackingSession, id=session_id)
+            if allow_trackingkey and tracking_key is not None:
+                if session.user.trackingkey.key != tracking_key:
+                    return HttpResponseForbidden()
+            elif not request.user.is_authenticated() or session.user != request.user:
+                return redirect('{0}?next={1}'.format(settings.LOGIN_URL, request.path))
+            request.tracking_session = session
+            return fn(request, *args, **kwargs)
+        return inner
+    if function:
+        return decorator(function)
+    return decorator
 
 
 def index(request):
@@ -68,7 +89,7 @@ def user_session_list(request):
     })
 
 
-@auth_tracking_session
+@authenticate_view_session
 def session(request):
     return render(request, 'session.html', {
         'session_id': request.tracking_session.id,
@@ -76,7 +97,7 @@ def session(request):
     })
 
 
-@auth_tracking_session
+@authenticate_view_session
 def session_data(request):
     return HttpResponse(request.tracking_session.as_json(),
                         content_type='application/json')
@@ -108,4 +129,18 @@ def tracking_keys(request, action=None):
 
     return render(request, 'tracking_key.html', {
         'tracking_key': request.user.trackingkey
+    })
+
+@authenticate_tracking_session
+def session_finish(request):
+    request.tracking_session.finish()
+    return HttpResponse("ok")
+
+@authenticate_view_session(allow_viewkey=False)
+def session_share(request):
+    vk = ViewKey.create_key()
+    vk.sessions.add(request.tracking_session)
+    return render(request, 'session.html', {
+        'session': request.tracking_session,
+        'view_keys': request.tracking_session.viewkey_set.all()
     })

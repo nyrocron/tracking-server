@@ -125,7 +125,7 @@ def track(request, tracking_key, session_id):
 @login_required
 def tracking_keys(request, action=None):
     if action == 'new':
-        TrackingKey.create_key(request.user)
+        request.user.trackingkey.renew()
 
     return render(request, 'tracking_key.html', {
         'tracking_key': request.user.trackingkey
@@ -140,3 +140,6 @@ def session_finish(request):
 def session_share(request):
     ViewKey.create_key(request.tracking_session)
     return redirect('user_session', request.tracking_session.id)
+
+def tracking_session_share(request):
+    pass

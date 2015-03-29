@@ -58,13 +58,6 @@ class TrackingKey(models.Model):
     def __str__(self):
         return self.key
 
-    def renew(self):
-        try:
-            self.key = random_string(16)
-            self.save()
-        except IntegrityError:
-            self.renew()
-
     @staticmethod
     def create_key(user):
         """Create a new random key."""
@@ -80,13 +73,6 @@ class ViewKey(models.Model):
 
     def __str__(self):
         return self.key
-
-    def renew(self):
-        try:
-            self.key = random_string(16)
-            self.save()
-        except IntegrityError:
-            self.renew()
 
     @staticmethod
     def create_key(session):

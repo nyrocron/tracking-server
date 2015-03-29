@@ -1,13 +1,10 @@
-from django import forms
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from tracker.forms import RegistrationForm
 
 from tracker.models import TrackingSession, ViewKey, TrackedPosition, \
     TrackingKey
@@ -18,9 +15,12 @@ def authenticate_view_session(function=None, allow_viewkey=True):
     def decorator(fn):
         def inner(request, session_id, view_key=None, *args, **kwargs):
             session = get_object_or_404(TrackingSession, id=session_id)
+            request.viewkey = None
             if allow_viewkey and view_key is not None:
-                if not session.viewkey_set.get(key=view_key):
+                viewkey = get_object_or_404(ViewKey, key=view_key)
+                if viewkey.session != session:
                     return HttpResponseForbidden()
+                request.viewkey = viewkey
             elif not request.user.is_authenticated() or session.user != request.user:
                 return redirect('{0}?next={1}'.format(settings.LOGIN_URL, request.path))
             request.tracking_session = session
@@ -92,8 +92,8 @@ def user_session_list(request):
 @authenticate_view_session
 def session(request):
     return render(request, 'session.html', {
-        'session_id': request.tracking_session.id,
-        'start_time': request.tracking_session.start_time,
+        'session': request.tracking_session,
+        'view_key': request.viewkey.key if request.viewkey else None
     })
 
 
@@ -138,9 +138,5 @@ def session_finish(request):
 
 @authenticate_view_session(allow_viewkey=False)
 def session_share(request):
-    vk = ViewKey.create_key()
-    vk.sessions.add(request.tracking_session)
-    return render(request, 'session.html', {
-        'session': request.tracking_session,
-        'view_keys': request.tracking_session.viewkey_set.all()
-    })
+    ViewKey.create_key(request.tracking_session)
+    return redirect('user_session', request.tracking_session.id)

@@ -9,7 +9,7 @@ from django.utils import timezone
 class TrackingSession(models.Model):
     user = models.ForeignKey(User)
     start_time = models.DateTimeField()
-    active = models.BooleanField()
+    active = models.BooleanField(default=True)
 
     @staticmethod
     def create_session(user):
@@ -52,17 +52,22 @@ class TrackedPosition(models.Model):
 
 
 class TrackingKey(models.Model):
-    key = models.CharField(max_length=32, primary_key=True)
+    key = models.CharField(primary_key=True, max_length=32)
     user = models.OneToOneField(User)
 
     def __str__(self):
         return self.key
 
+    def renew(self):
+        try:
+            self.key = random_string(16)
+            self.save()
+        except IntegrityError:
+            self.renew()
+
     @staticmethod
     def create_key(user):
         """Create a new random key."""
-        if user.trackingkey:
-            user.trackingkey.delete()
         try:
             TrackingKey(user=user, key=random_string(16)).save()
         except IntegrityError:
@@ -70,21 +75,26 @@ class TrackingKey(models.Model):
 
 
 class ViewKey(models.Model):
-    sessions = models.ManyToManyField(TrackingSession, blank=True)
     key = models.CharField(primary_key=True, max_length=32)
+    session = models.OneToOneField(TrackingSession)
 
     def __str__(self):
         return self.key
 
-    @staticmethod
-    def create_key():
-        """Create a new random key."""
-        k = ViewKey(key=random_string(16))
+    def renew(self):
         try:
-            k.save()
+            self.key = random_string(16)
+            self.save()
         except IntegrityError:
-            return ViewKey.create_key()
-        return k
+            self.renew()
+
+    @staticmethod
+    def create_key(session):
+        """Create a new random key."""
+        try:
+            ViewKey(session=session, key=random_string(16)).save()
+        except IntegrityError:
+            ViewKey.create_key(session)
 
 
 def random_string(n):

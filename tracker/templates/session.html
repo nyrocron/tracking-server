@@ -9,9 +9,9 @@
     <script>
         jQuery(document).ready(function() {
             {% if view_key %}
-                var data_url = "{% url 'session_data_vk' session_id view_key %}";
+                var data_url = "{% url 'vk_session_data' session.id view_key %}";
             {% else %}
-                var data_url = "{% url 'session_data' session_id %}";
+                var data_url = "{% url 'session_data' session.id %}";
             {% endif %}
 
             {% if session.active %}
@@ -31,8 +31,20 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Session from {{ start_time }}{% if not session.active %} (finished){% endif %}</h1>
-    <span id="status"></span>
+    <div id="map_header">
+        <h1>Session from {{ session.start_time }}{% if not session.active %} (finished){% endif %}</h1>
+        <span id="status"></span>
+        <div class="shareInfo">
+            {% if not view_key %}
+                {% if session.viewkey %}
+                    Shared as <a href="{% url 'vk_session' session.id session.viewkey.key %}">
+                    {% url 'vk_session' session.id session.viewkey.key %}</a>
+                {% else %}
+                    <a href="{% url 'share_session' session.id %}">share</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
     <div id="map_wrapper">
         <div id="map"></div>
     </div>

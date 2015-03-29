@@ -10,6 +10,11 @@ div#content {
 }
 
 h1 {
+    display: inline-block;
     font-size: 1.2em;
     margin: 0.2em;
+}
+
+.shareInfo {
+    display: inline-block;
 }

@@ -141,5 +141,7 @@ def session_share(request):
     ViewKey.create_key(request.tracking_session)
     return redirect('user_session', request.tracking_session.id)
 
+@authenticate_tracking_session
 def tracking_session_share(request):
-    pass
+    view_key = request.tracking_session.get_viewkey()
+    return HttpResponse(view_key.key)

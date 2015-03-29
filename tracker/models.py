@@ -19,6 +19,14 @@ class TrackingSession(models.Model):
         sess.save()
         return sess
 
+    def get_viewkey(self):
+        """Get or create viewkey for this session."""
+        try:
+            viewkey = self.viewkey
+        except ViewKey.DoesNotExist:
+            viewkey = ViewKey.create_key(self)
+        return viewkey
+
     def finish(self):
         self.active = False
         if self.trackedposition_set.count() > 0:
@@ -81,9 +89,11 @@ class ViewKey(models.Model):
     def create_key(session):
         """Create a new random key."""
         try:
-            ViewKey(session=session, key=random_string(16)).save()
+            viewkey = ViewKey(session=session, key=random_string(16))
         except IntegrityError:
-            ViewKey.create_key(session)
+            viewkey = ViewKey.create_key(session)
+        viewkey.save()
+        return viewkey
 
 
 def random_string(n):

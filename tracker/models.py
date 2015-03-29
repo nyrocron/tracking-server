@@ -13,6 +13,8 @@ class TrackingSession(models.Model):
 
     @staticmethod
     def create_session(user):
+        for session in TrackingSession.objects.filter(user=user):
+            session.finish()
         sess = TrackingSession(user=user, start_time=timezone.now(), active=True)
         sess.save()
         return sess

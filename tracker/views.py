@@ -104,7 +104,6 @@ def session_data(request):
                         content_type='application/json')
 
 
-@csrf_exempt
 def session_new(request, tracking_key):
     tk = get_object_or_404(TrackingKey, key=tracking_key)
     sess = TrackingSession.create_session(tk.user)

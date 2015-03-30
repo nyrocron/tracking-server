@@ -1,28 +1,32 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    {% block scripts %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
     {% block styles %}{% endblock %}
+    {% block scripts %}{% endblock %}
 </head>
 <body>
-    <ul id="topmenu" class="menu menu-horizontal">
-        <li><a href="{% url 'index' %}">Home</a></li>
-    {% if user and user.is_authenticated %}
-        <li><a href="{% url 'user_session_list' %}">My Sessions</a></li>
-        <li><a href="{% url 'user_tracking_key' %}">Tracking Key</a></li>
-        <li><a href="{% url 'logout' %}">Log Out</a></li>
-        <li class="userinfo">Logged in as {{ user.username }}</li>
-    {% else %}
-        <li><a href="{% url 'login' %}">Log In</a></li>
-        <li><a href="{% url 'signup' %}">Sign Up</a></li>
-    {% endif %}
-    </ul>
-    <div id="content">
-        {% block content %}{% endblock %}
-    </div>
+<header>
+    <img class="logo" src="{% static 'gfx/logo.png' %}" alt="Tracker logo">
+    <nav>
+        <ul>
+            <li><a href="{% url 'index' %}">Home</a></li>
+        {% if user and user.is_authenticated %}
+            <li><a href="{% url 'user_session_list' %}">My Sessions</a></li>
+            <li><a href="{% url 'user_tracking_key' %}">Tracking Key</a></li>
+            <li><a href="{% url 'logout' %}">Log out {{ user.username }}</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Log In</a></li>
+            <li><a href="{% url 'signup' %}">Sign Up</a></li>
+        {% endif %}
+        </ul>
+    </nav>
+</header>
+<main>
+    {% block content %}{% endblock %}
+</main>
 </body>
 </html>

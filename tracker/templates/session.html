@@ -2,6 +2,11 @@
 
 {% load staticfiles %}
 
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ol.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/map.css' %}">
+{% endblock %}
+
 {% block scripts %}
     <script type="application/javascript" src="{% static 'js/jquery-2.1.3.js' %}"></script>
     <script type="application/javascript" src="{% static 'js/ol.js' %}"></script>
@@ -23,11 +28,6 @@
             app.init(data_url, refresh);
         });
     </script>
-{% endblock %}
-
-{% block styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/ol.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/map.css' %}">
 {% endblock %}
 
 {% block content %}

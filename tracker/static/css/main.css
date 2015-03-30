@@ -1,0 +1,87 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+nav a {
+    text-decoration: none;
+    color: inherit;
+}
+
+nav a:visited {
+    color: inherit;
+}
+
+header {
+    line-height: 40px;
+    background-color: #000000;
+    color: #ffffff;
+    box-shadow: 0 0 3px #000000;
+}
+
+header img.logo {
+    float: left;
+    margin-right: 10px;
+}
+
+header nav {
+    font-weight: bold;
+}
+
+header nav a {
+    display: inline-block;
+    padding: 0 1em;
+}
+
+header nav a:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+header ul {
+    margin: 0;
+    padding: 0;
+}
+
+header ul li {
+    display: inline;
+}
+
+header .userinfo {
+    display: inline;
+}
+
+main {
+    padding: 20px;
+}
+
+.error {
+    color: red;
+}
+
+form table th {
+    text-align: left;
+    vertical-align: baseline;
+}
+
+form span.helptext {
+    font-size: 0.8em;
+    color: dimgrey;
+}
+
+form ul.errorlist {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.8em;
+    color: red;
+}
+
+ul.session-list {
+    list-style-type: none;
+    padding: 0;
+}

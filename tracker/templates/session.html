@@ -36,12 +36,8 @@
         <span id="status"></span>
         <div class="shareInfo">
             {% if not view_key %}
-                {% if session.viewkey %}
-                    Shared as <a href="{% url 'vk_session' session.id session.viewkey.key %}">
-                    {% url 'vk_session' session.id session.viewkey.key %}</a>
-                {% else %}
-                    <a href="{% url 'share_session' session.id %}">share</a>
-                {% endif %}
+                Shared as <a href="{% url 'vk_session' session.id session.viewkey %}">
+                {% url 'vk_session' session.id session.viewkey %}</a>
             {% endif %}
         </div>
     </div>

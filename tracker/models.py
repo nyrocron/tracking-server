@@ -10,22 +10,16 @@ class TrackingSession(models.Model):
     user = models.ForeignKey(User)
     start_time = models.DateTimeField()
     active = models.BooleanField(default=True)
+    viewkey = models.CharField(max_length=32)
 
     @staticmethod
     def create_session(user):
         for session in TrackingSession.objects.filter(user=user):
             session.finish()
-        sess = TrackingSession(user=user, start_time=timezone.now(), active=True)
+        sess = TrackingSession(user=user, start_time=timezone.now(),
+                               active=True, viewkey=random_string(16))
         sess.save()
         return sess
-
-    def get_viewkey(self):
-        """Get or create viewkey for this session."""
-        try:
-            viewkey = self.viewkey
-        except ViewKey.DoesNotExist:
-            viewkey = ViewKey.create_key(self)
-        return viewkey
 
     def finish(self):
         self.active = False
@@ -76,24 +70,6 @@ class TrackingKey(models.Model):
             TrackingKey(user=user, key=random_string(16)).save()
         except IntegrityError:
             TrackingKey.create_key(user)
-
-
-class ViewKey(models.Model):
-    key = models.CharField(primary_key=True, max_length=32)
-    session = models.OneToOneField(TrackingSession)
-
-    def __str__(self):
-        return self.key
-
-    @staticmethod
-    def create_key(session):
-        """Create a new random key."""
-        try:
-            viewkey = ViewKey(session=session, key=random_string(16))
-        except IntegrityError:
-            viewkey = ViewKey.create_key(session)
-        viewkey.save()
-        return viewkey
 
 
 def random_string(n):

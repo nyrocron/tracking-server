@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from tracker.models import TrackingSession, ViewKey, TrackedPosition, \
+from tracker.models import TrackingSession, TrackedPosition, \
     TrackingKey
 from tracking import settings
 
@@ -15,12 +15,10 @@ def authenticate_view_session(function=None, allow_viewkey=True):
     def decorator(fn):
         def inner(request, session_id, view_key=None, *args, **kwargs):
             session = get_object_or_404(TrackingSession, id=session_id)
-            request.viewkey = None
+            request.viewkey = view_key
             if allow_viewkey and view_key is not None:
-                viewkey = get_object_or_404(ViewKey, key=view_key)
-                if viewkey.session != session:
+                if session.viewkey != view_key:
                     return HttpResponseForbidden()
-                request.viewkey = viewkey
             elif not request.user.is_authenticated() or session.user != request.user:
                 return redirect('{0}?next={1}'.format(settings.LOGIN_URL, request.path))
             request.tracking_session = session
@@ -75,14 +73,6 @@ def signup(request):
     return render(request, 'registration/signup.html', {'form': form})
 
 
-def viewkey_session_list(request, view_key):
-    viewkey_object = get_object_or_404(ViewKey, key=view_key)
-    return render(request, 'session_list.html', {
-        'view_key': view_key,
-        'session_list': viewkey_object.sessions.all(),
-    })
-
-
 @login_required
 def user_session_list(request):
     return render(request, 'session_list.html', {
@@ -94,7 +84,7 @@ def user_session_list(request):
 def session(request):
     return render(request, 'session.html', {
         'session': request.tracking_session,
-        'view_key': request.viewkey.key if request.viewkey else None
+        'view_key': request.viewkey
     })
 
 
@@ -107,7 +97,7 @@ def session_data(request):
 def session_new(request, tracking_key):
     tk = get_object_or_404(TrackingKey, key=tracking_key)
     sess = TrackingSession.create_session(tk.user)
-    return HttpResponse(sess.id)
+    return HttpResponse('{0},{1}'.format(sess.id, sess.viewkey))
 
 
 @csrf_exempt
@@ -135,11 +125,6 @@ def tracking_keys(request, action=None):
 def session_finish(request):
     request.tracking_session.finish()
     return HttpResponse("ok")
-
-@authenticate_view_session(allow_viewkey=False)
-def session_share(request):
-    ViewKey.create_key(request.tracking_session)
-    return redirect('user_session', request.tracking_session.id)
 
 @authenticate_tracking_session
 def tracking_session_share(request):

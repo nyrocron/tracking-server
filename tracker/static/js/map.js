@@ -1,22 +1,23 @@
 window.app = {};
 var app = window.app;
 
+app.map = null;
 app.dataURL = null;
 app.trackSource = null;
 app.lastPosition = null;
 app.refresh = true;
+app.follow = true;
 
 app.CenterMapControl = function(opt_options) {
     var options = opt_options || {};
     var button = document.createElement('button');
     button.innerHTML = "O";
 
-    var this_ = this;
     var handleCenterMap = function (e) {
-        if (app.lastPosition != null)
-            this_.getMap().getView().setCenter(app.lastPosition);
+        app.follow = !app.follow;
+        if (app.follow)
+            app.map.getView().setCenter(app.lastPosition);
     };
-
     button.addEventListener('click', handleCenterMap, false);
     button.addEventListener('touchstart', handleCenterMap, false);
 
@@ -65,21 +66,22 @@ app.showData = function(data) {
         pointCoords.push(coords);
     });
 
+    if (pointCoords.length == 0)
+        return;
+
     var features = [];
-    if (pointCoords.length > 0) {
-        features.push(new ol.Feature({
-            geometry: new ol.geom.LineString(pointCoords)
-        }));
+    features.push(new ol.Feature({
+        geometry: new ol.geom.LineString(pointCoords)
+    }));
 
-        var lastPos = pointCoords[pointCoords.length - 1];
-        if (app.lastPosition == null)
-            app.map.getView().setCenter(lastPos);
-        app.lastPosition = lastPos;
+    var lastPos = pointCoords[pointCoords.length - 1];
+    if (app.follow || app.lastPosition == null)
+        app.map.getView().setCenter(lastPos);
+    app.lastPosition = lastPos;
 
-        features.push(new ol.Feature({
-            geometry: new ol.geom.Point(app.lastPosition)
-        }));
-    }
+    features.push(new ol.Feature({
+        geometry: new ol.geom.Point(app.lastPosition)
+    }));
 
     // update map
     app.trackSource.clear();

@@ -23,6 +23,7 @@ urlpatterns = patterns('',
         views.session, name='vk_session'),
     url(r'^session/$', views.user_session_list, name='user_session_list'),
     url(r'^session/(?P<session_id>\d+)/$', views.session, name='user_session'),
+    url(r'^session/(?P<session_id>\d+)/gpx/$', views.session_gpx, name='session_gpx'),
 
     url(r'^trackingkey/$', views.tracking_key, name='user_tracking_key'),
 

@@ -89,6 +89,15 @@ def session(request):
     })
 
 
+@authenticate_tracking_session(allow_trackingkey=False)
+def session_gpx(request):
+    response =  HttpResponse(request.tracking_session.as_gpx(),
+                             content_type='application/gpx+xml')
+    response['Content-Disposition'] = 'attachment; filename={0}.gpx'.format(
+        request.tracking_session.title())
+    return response
+
+
 @authenticate_view_session
 def session_data(request, since=None):
     return HttpResponse(request.tracking_session.as_json(since),

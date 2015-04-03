@@ -5,6 +5,8 @@ from django.db import models, IntegrityError
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from gpxpy import gpx
+
 
 class TrackingSession(models.Model):
     user = models.ForeignKey(User)
@@ -20,6 +22,9 @@ class TrackingSession(models.Model):
                                active=True, viewkey=random_string(16))
         sess.save()
         return sess
+
+    def title(self):
+        return self.start_time.strftime('%Y-%m-%d_%H-%M-%S')
 
     def finish(self):
         self.active = False
@@ -43,6 +48,17 @@ class TrackingSession(models.Model):
             'points': points,
             'active': self.active
         })
+
+    def as_gpx(self):
+        segment = gpx.GPXTrackSegment()
+        for pos in self.trackedposition_set.all():
+            track_point = gpx.GPXTrackPoint(pos.latitude, pos.longitude, pos.altitude)
+            segment.points.append(track_point)
+        track = gpx.GPXTrack()
+        track.segments.append(segment)
+        gpx_obj = gpx.GPX()
+        gpx_obj.tracks.append(track)
+        return gpx_obj.to_xml()
 
 
 class TrackedPosition(models.Model):

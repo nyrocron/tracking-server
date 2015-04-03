@@ -5,21 +5,31 @@
 {% block content %}
     {% if session_list %}
         <h1>Sessions:</h1>
-        <ul class="session-list">
+
+        <table class="session-list">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Download</th>
+                </tr>
+            </thead>
+            <tbody>
             {% for session in session_list %}
-                <li>
+                <tr>
+                    <td>
                     {% if view_key %}
                         <a href="{% url 'vk_session' view_key session.id %}">{{ session.start_time }}</a>
                     {% else %}
                         <a href="{% url 'user_session' session.id %}">{{ session.start_time }}</a>
                     {% endif %}
-
-                    {% if not session.active %}
-                        <span>finished</span>
-                    {% endif %}
-                </li>
+                    </td>
+                    <td>{% if session.active %}active{% else %}finished{% endif %}</td>
+                    <td><a href="{% url 'session_gpx' session.id %}">.gpx</a></td>
+                </tr>
             {% endfor %}
-        </ul>
+            </tbody>
+        </table>
     {% else %}
         <p>No sessions found.</p>
     {% endif %}

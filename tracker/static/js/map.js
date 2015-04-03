@@ -5,8 +5,12 @@ app.map = null;
 app.dataURL = null;
 app.trackSource = null;
 app.lastPosition = null;
+app.lastId = 0;
 app.refresh = true;
 app.follow = true;
+
+app.lineString = null;
+app.lastPositionPoint = null;
 
 app.CenterMapControl = function(opt_options) {
     var options = opt_options || {};
@@ -32,18 +36,17 @@ app.CenterMapControl = function(opt_options) {
 };
 ol.inherits(app.CenterMapControl, ol.control.Control);
 
-app.init = function(url, refresh) {
+app.init = function(url) {
     app.dataURL = url;
-    app.refresh = refresh;
 
     app.initializeMap();
     app.updateMap();
 };
 
 app.updateMap = function () {
-    jQuery.getJSON(app.dataURL)
+    jQuery.getJSON(app.dataURL + 'since/' + app.lastId + '/')
         .done(function(data) {
-            $('#status').text('');
+            $('#status').removeClass('error').text('');
             app.showData(data);
             if (!data.active) {
                 app.refresh = false;
@@ -64,28 +67,45 @@ app.showData = function(data) {
     jQuery.each(data.points, function(i, point) {
         var coords = ol.proj.transform([point.longitude, point.latitude], 'EPSG:4326', 'EPSG:3857');
         pointCoords.push(coords);
+        app.lastId = point.id;
     });
 
     if (pointCoords.length == 0)
         return;
 
-    var features = [];
-    features.push(new ol.Feature({
-        geometry: new ol.geom.LineString(pointCoords)
-    }));
+    //var features = [];
+    //features.push(new ol.Feature({
+    //    geometry: new ol.geom.LineString(pointCoords)
+    //}));
+
+    if (app.lineString == null) {
+        app.lineString = new ol.geom.LineString(pointCoords);
+        app.trackSource.addFeature(new ol.Feature({geometry: app.lineString}));
+    } else {
+        jQuery.each(pointCoords, function(i, coords) {
+            app.lineString.appendCoordinate(coords);
+        });
+    }
 
     var lastPos = pointCoords[pointCoords.length - 1];
     if (app.follow || app.lastPosition == null)
         app.map.getView().setCenter(lastPos);
     app.lastPosition = lastPos;
 
-    features.push(new ol.Feature({
-        geometry: new ol.geom.Point(app.lastPosition)
-    }));
+    if (app.lastPositionPoint == null) {
+        app.lastPositionPoint = new ol.geom.Point(lastPos);
+        app.trackSource.addFeature(new ol.Feature({geometry: app.lastPositionPoint}));
+    } else {
+        app.lastPositionPoint.setCoordinates(lastPos);
+    }
+
+    //features.push(new ol.Feature({
+    //    geometry: new ol.geom.Point(app.lastPosition)
+    //}));
 
     // update map
-    app.trackSource.clear();
-    app.trackSource.addFeatures(features);
+    //app.trackSource.clear();
+    //app.trackSource.addFeatures(features);
 };
 
 app.initializeMap = function() {

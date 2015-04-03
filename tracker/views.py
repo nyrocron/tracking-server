@@ -90,8 +90,8 @@ def session(request):
 
 
 @authenticate_view_session
-def session_data(request):
-    return HttpResponse(request.tracking_session.as_json(),
+def session_data(request, since=None):
+    return HttpResponse(request.tracking_session.as_json(since),
                         content_type='application/json')
 
 

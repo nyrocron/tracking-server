@@ -28,14 +28,20 @@ class TrackingSession(models.Model):
         else:
             self.delete()
 
-    def as_json(self):
+    def as_json(self, from_id=None):
+        if from_id is None:
+            positions = self.trackedposition_set.all()
+        else:
+            positions = self.trackedposition_set.filter(id__gt=from_id)
+
         points = [{
             'latitude': pos.latitude,
-            'longitude': pos.longitude
-        } for pos in self.trackedposition_set.all()]
+            'longitude': pos.longitude,
+            'id': pos.id
+        } for pos in positions]
         return dumps({
             'points': points,
-            'active': self.active == True
+            'active': self.active
         })
 
 

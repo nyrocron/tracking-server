@@ -14,7 +14,10 @@ urlpatterns = patterns('',
 
     url(r'^session/(?P<session_id>\d+)/data/viewkey/(?P<view_key>[a-z]+)/$',
         views.session_data, name='vk_session_data'),
+    url(r'^session/(?P<session_id>\d+)/data/viewkey/(?P<view_key>[a-z]+)/since/(?P<since>\d+)/$',
+        views.session_data),
     url(r'^session/(?P<session_id>\d+)/data/$', views.session_data, name='session_data'),
+    url(r'^session/(?P<session_id>\d+)/data/since/(?P<since>\d+)/$', views.session_data),
 
     url(r'^session/(?P<session_id>\d+)/viewkey/(?P<view_key>[a-z]+)/$',
         views.session, name='vk_session'),

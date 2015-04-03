@@ -3,6 +3,6 @@
 {% block title %}Tracker - Tracking Keys{% endblock %}
 
 {% block content %}
-    <p>Your tracking key: {{ tracking_key }}</p>
+    <p>Your tracking key: {{ tracking_key | upper }}</p>
     {# <a href="{% url 'user_tracking_key_new' %}">Create new key</a> #}
 {% endblock %}

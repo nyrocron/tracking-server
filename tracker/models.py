@@ -47,14 +47,6 @@ class TrackedPosition(models.Model):
     altitude = models.FloatField()
     accuracy = models.FloatField()
 
-    @staticmethod
-    def from_json(session, json_string):
-        json_dict = loads(json_string)
-        tp = TrackedPosition(**json_dict)
-        tp.session = session
-        tp.save()
-        return tp
-
 
 class TrackingKey(models.Model):
     key = models.CharField(primary_key=True, max_length=32)

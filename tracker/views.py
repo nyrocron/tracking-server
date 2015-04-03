@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -108,12 +109,15 @@ def track(request, tracking_key, session_id):
     if tk.user_id != session.user_id:
         return HttpResponseForbidden()
 
-    tp = TrackedPosition.from_json(session, request.body.decode('utf-8'))
-    return HttpResponse(tp.id)
+    for position in json.loads(request.body.decode('utf-8')):
+        tp = TrackedPosition(session=session, **position)
+        tp.save()
+
+    return HttpResponse('ok')
 
 
 @login_required
-def tracking_keys(request, action=None):
+def tracking_key(request, action=None):
     if action == 'new':
         request.user.trackingkey.renew()
 
@@ -125,8 +129,3 @@ def tracking_keys(request, action=None):
 def session_finish(request):
     request.tracking_session.finish()
     return HttpResponse("ok")
-
-@authenticate_tracking_session
-def tracking_session_share(request):
-    view_key = request.tracking_session.get_viewkey()
-    return HttpResponse(view_key.key)

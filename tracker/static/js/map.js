@@ -140,7 +140,13 @@ app.initializeMap = function() {
         layers: [
             new ol.layer.Tile({
                 source: new ol.source.XYZ({
-                    url: 'http://a.tile.opentopomap.org/{z}/{x}/{y}.png'
+                    url: 'http://a.tile.opentopomap.org/{z}/{x}/{y}.png',
+                    attributions: [
+                        new ol.Attribution({
+                            html: 'Kartendaten: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, SRTM | ' +
+                                  'Kartendarstellung: © <a href="http://opentopomap.org/">OpenTopoMap</a>'
+                        })
+                    ]
                 })
                 //source: new ol.source.MapQuest({layer: 'sat'})
             }),
@@ -151,7 +157,8 @@ app.initializeMap = function() {
         ],
         view: new ol.View({
             center: ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857'),
-            zoom: 13
+            zoom: 13,
+            maxZoom: 16
         }),
         controls: ol.control.defaults().extend([
             new app.CenterMapControl()

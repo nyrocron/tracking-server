@@ -139,7 +139,10 @@ app.initializeMap = function() {
         target: 'map',
         layers: [
             new ol.layer.Tile({
-                source: new ol.source.MapQuest({layer: 'osm'})
+                source: new ol.source.XYZ({
+                    url: 'http://a.tile.opentopomap.org/{z}/{x}/{y}.png'
+                })
+                //source: new ol.source.MapQuest({layer: 'sat'})
             }),
             new ol.layer.Vector({
                 source: app.trackSource,

@@ -23,13 +23,14 @@ class Migration(migrations.Migration):
                 ('accuracy', models.FloatField()),
             ],
             options={
+                'ordering': ['id'],
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='TrackingKey',
             fields=[
-                ('key', models.CharField(primary_key=True, serialize=False, max_length=32)),
+                ('key', models.CharField(max_length=32, primary_key=True, serialize=False)),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -41,18 +42,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('start_time', models.DateTimeField()),
-                ('active', models.BooleanField()),
+                ('end_time', models.DateTimeField(null=True, blank=True)),
+                ('active', models.BooleanField(default=True)),
+                ('viewkey', models.CharField(max_length=32)),
+                ('is_cleaned', models.BooleanField(default=False)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='ViewKey',
-            fields=[
-                ('key', models.CharField(primary_key=True, serialize=False, max_length=32)),
-                ('session', models.OneToOneField(to='tracker.TrackingSession')),
             ],
             options={
             },

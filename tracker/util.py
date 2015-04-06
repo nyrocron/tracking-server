@@ -54,7 +54,7 @@ def _simplify(locations, epsilon):
             tp_keep.longitude = group_mean.lon
             keep.append(group[0])
             remove += group[1:]
-            group.clear()
+            group = []
         group.append(loc)
 
     # merge last group into last point

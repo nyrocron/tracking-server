@@ -3,7 +3,7 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -38,7 +38,10 @@ def authenticate_tracking_session(function=None, allow_trackingkey=True):
                 if session.user.trackingkey.key != tracking_key:
                     return HttpResponseForbidden()
             elif not request.user.is_authenticated() or session.user != request.user:
-                return redirect('{0}?next={1}'.format(settings.LOGIN_URL, request.path))
+                return redirect('{0}?next={1}'.format(settings.LOGIN_URL,
+                                                      request.path))
+            if not session.active:
+                return HttpResponseForbidden('session is finished')
             request.tracking_session = session
             return fn(request, *args, **kwargs)
         return inner
@@ -91,11 +94,17 @@ def session(request):
 
 @authenticate_tracking_session(allow_trackingkey=False)
 def session_gpx(request):
-    response =  HttpResponse(request.tracking_session.as_gpx(),
-                             content_type='application/gpx+xml')
+    response = HttpResponse(request.tracking_session.as_gpx(),
+                            content_type='application/gpx+xml')
     response['Content-Disposition'] = 'attachment; filename={0}.gpx'.format(
         request.tracking_session.title())
     return response
+
+
+@authenticate_view_session(allow_viewkey=False)
+def session_clean(request):
+    request.tracking_session.clean_points()
+    return redirect('user_session_list')
 
 
 @authenticate_view_session
@@ -110,18 +119,12 @@ def session_new(request, tracking_key):
     return HttpResponse('{0},{1}'.format(sess.id, sess.viewkey))
 
 
-@csrf_exempt
 @require_POST
-def track(request, tracking_key, session_id):
-    tk = get_object_or_404(TrackingKey, key=tracking_key)
-    session = get_object_or_404(TrackingSession, id=session_id)
-    if tk.user_id != session.user_id:
-        return HttpResponseForbidden()
-
+@authenticate_tracking_session
+def track(request):
     for position in json.loads(request.body.decode('utf-8')):
-        tp = TrackedPosition(session=session, **position)
+        tp = TrackedPosition(session=request.tracking_session, **position)
         tp.save()
-
     return HttpResponse('ok')
 
 
@@ -133,6 +136,7 @@ def tracking_key(request, action=None):
     return render(request, 'tracking_key.html', {
         'tracking_key': request.user.trackingkey
     })
+
 
 @authenticate_tracking_session
 def session_finish(request):

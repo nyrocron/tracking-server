@@ -51,10 +51,6 @@ header ul li {
     display: inline;
 }
 
-header .userinfo {
-    display: inline;
-}
-
 main {
     padding: 20px;
 }
@@ -89,10 +85,11 @@ table.session-list tr {
 }
 
 table.session-list th {
+    padding-right: 0.8em;
     text-align: left;
 }
 
 table.session-list td {
-    padding-right: 1em;
+    padding-right: 0.8em;
     border-top: 1px solid #cccccc;
 }

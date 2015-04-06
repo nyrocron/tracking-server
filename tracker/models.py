@@ -1,18 +1,22 @@
 from os import urandom
-from json import loads, dumps
+from json import dumps
 
 from django.db import models, IntegrityError
 from django.contrib.auth.models import User
+from django.db.transaction import commit_on_success
 from django.utils import timezone
-
 from gpxpy import gpx
+
+from tracker.util import simplify_track
 
 
 class TrackingSession(models.Model):
     user = models.ForeignKey(User)
     start_time = models.DateTimeField()
-    active = models.BooleanField(default=True)
+    end_time = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(blank=True, default=True)
     viewkey = models.CharField(max_length=32)
+    is_cleaned = models.BooleanField(blank=True, default=False)
 
     @staticmethod
     def create_session(user):
@@ -29,6 +33,7 @@ class TrackingSession(models.Model):
     def finish(self):
         self.active = False
         if self.trackedposition_set.count() > 0:
+            self.end_time = self.trackedposition_set.latest('id').time
             self.save()
         else:
             self.delete()
@@ -52,13 +57,26 @@ class TrackingSession(models.Model):
     def as_gpx(self):
         segment = gpx.GPXTrackSegment()
         for pos in self.trackedposition_set.all():
-            track_point = gpx.GPXTrackPoint(pos.latitude, pos.longitude, pos.altitude)
+            track_point = gpx.GPXTrackPoint(pos.latitude, pos.longitude,
+                                            pos.altitude)
             segment.points.append(track_point)
         track = gpx.GPXTrack()
         track.segments.append(segment)
         gpx_obj = gpx.GPX()
         gpx_obj.tracks.append(track)
         return gpx_obj.to_xml()
+
+    @commit_on_success
+    def clean_points(self):
+        if self.is_cleaned:
+            raise ValueError('session was already cleaned')
+        keep, remove = simplify_track(self.trackedposition_set.all())
+        for tp in keep:
+            tp.save()
+        for tp in remove:
+            tp.delete()
+        self.is_cleaned = True
+        self.save()
 
 
 class TrackedPosition(models.Model):
@@ -68,6 +86,9 @@ class TrackedPosition(models.Model):
     longitude = models.FloatField()
     altitude = models.FloatField()
     accuracy = models.FloatField()
+
+    class Meta:
+        ordering = ['id']
 
 
 class TrackingKey(models.Model):

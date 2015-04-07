@@ -119,6 +119,7 @@ def session_new(request, tracking_key):
     return HttpResponse('{0},{1}'.format(sess.id, sess.viewkey))
 
 
+@csrf_exempt
 @require_POST
 @authenticate_tracking_session
 def track(request):

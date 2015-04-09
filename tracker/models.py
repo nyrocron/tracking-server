@@ -3,7 +3,7 @@ from json import dumps
 
 from django.db import models, IntegrityError
 from django.contrib.auth.models import User
-from django.db.transaction import commit_on_success
+from django.db.transaction import atomic
 from django.utils import timezone
 from gpxpy import gpx
 
@@ -66,7 +66,7 @@ class TrackingSession(models.Model):
         gpx_obj.tracks.append(track)
         return gpx_obj.to_xml()
 
-    @commit_on_success
+    @atomic
     def clean_points(self):
         if self.is_cleaned:
             raise ValueError('session was already cleaned')

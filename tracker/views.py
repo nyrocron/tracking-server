@@ -92,7 +92,7 @@ def session(request):
     })
 
 
-@authenticate_tracking_session(allow_trackingkey=False)
+@authenticate_view_session(allow_viewkey=False)
 def session_gpx(request):
     response = HttpResponse(request.tracking_session.as_gpx(),
                             content_type='application/gpx+xml')
@@ -104,6 +104,12 @@ def session_gpx(request):
 @authenticate_view_session(allow_viewkey=False)
 def session_clean(request):
     request.tracking_session.clean_points()
+    return redirect('user_session_list')
+
+
+@authenticate_view_session(allow_viewkey=False)
+def session_delete(request):
+    request.tracking_session.delete()
     return redirect('user_session_list')
 
 

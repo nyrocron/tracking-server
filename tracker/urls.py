@@ -29,6 +29,8 @@ urlpatterns = patterns('',
         views.session_gpx, name='session_gpx'),
     url(r'^session/(?P<session_id>\d+)/clean/$',
         views.session_clean, name='session_clean'),
+    url(r'^session/(?P<session_id>\d+)/delete/$',
+        views.session_delete, name='session_delete'),
 
     url(r'^trackingkey/$', views.tracking_key, name='user_tracking_key'),
 

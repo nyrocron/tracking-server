@@ -116,10 +116,10 @@ app.initializeMap = function() {
         new ol.style.Style({
             image: new ol.style.Circle({
                 fill: new ol.style.Fill({
-                    color: '#ff0000'
+                    color: 'rgb(51, 153, 204)'
                 }),
                 stroke: new ol.style.Stroke({
-                    color: 'rgba(51, 153, 204, 0.8)',
+                    color: '#ff0066',
                     width: 3.0
                 }),
                 radius: 6.0
@@ -128,7 +128,7 @@ app.initializeMap = function() {
                 color: 'rgba(255, 0, 0, 0.4)'
             }),
             stroke: new ol.style.Stroke({
-                color: '#3399CC',
+                color: '#ff0066',
                 width: 4.0
             })
         })

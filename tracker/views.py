@@ -1,3 +1,6 @@
+# Copyright 2015 Florian Tautz
+# see LICENSE in the project root for licensing information
+
 import json
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required

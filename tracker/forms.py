@@ -1,3 +1,6 @@
+# Copyright 2015 Florian Tautz
+# see LICENSE in the project root for licensing information
+
 from django import forms
 
 

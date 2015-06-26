@@ -73,11 +73,6 @@ app.showData = function(data) {
     if (pointCoords.length == 0)
         return;
 
-    //var features = [];
-    //features.push(new ol.Feature({
-    //    geometry: new ol.geom.LineString(pointCoords)
-    //}));
-
     if (app.lineString == null) {
         app.lineString = new ol.geom.LineString(pointCoords);
         app.trackSource.addFeature(new ol.Feature({geometry: app.lineString}));
@@ -98,14 +93,6 @@ app.showData = function(data) {
     } else {
         app.lastPositionPoint.setCoordinates(lastPos);
     }
-
-    //features.push(new ol.Feature({
-    //    geometry: new ol.geom.Point(app.lastPosition)
-    //}));
-
-    // update map
-    //app.trackSource.clear();
-    //app.trackSource.addFeatures(features);
 };
 
 app.initializeMap = function() {
@@ -148,7 +135,6 @@ app.initializeMap = function() {
                         })
                     ]
                 })
-                //source: new ol.source.MapQuest({layer: 'sat'})
             }),
             new ol.layer.Vector({
                 source: app.trackSource,

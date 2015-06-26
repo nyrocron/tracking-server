@@ -83,7 +83,7 @@ def signup(request):
 @login_required
 def user_session_list(request):
     return render(request, 'session_list.html', {
-        'session_list': request.user.trackingsession_set.all(),
+        'session_list': request.user.trackingsession_set.order_by('-id'),
     })
 
 

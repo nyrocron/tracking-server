@@ -158,7 +158,7 @@ app.initializeMap = function() {
         view: new ol.View({
             center: ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857'),
             zoom: 13,
-            maxZoom: 16
+            maxZoom: 15
         }),
         controls: ol.control.defaults().extend([
             new app.CenterMapControl()

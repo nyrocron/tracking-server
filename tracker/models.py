@@ -58,7 +58,8 @@ class TrackingSession(models.Model):
         segment = gpx.GPXTrackSegment()
         for pos in self.trackedposition_set.all():
             track_point = gpx.GPXTrackPoint(pos.latitude, pos.longitude,
-                                            pos.altitude)
+                                            elevation=pos.altitude,
+                                            time=pos.time)
             segment.points.append(track_point)
         track = gpx.GPXTrack()
         track.segments.append(segment)
